@@ -1,0 +1,50 @@
+{
+  "name": "delore-crm-core",
+  "version": "1.0.0",
+  "description": "Core CRM utilities for Delore projects",
+  "main": "index.js",
+  "type": "commonjs",
+  "exports": {
+    ".": "./index.js",
+    "./access": "./access.js",
+    "./util": "./util.js"
+  },
+  "files": [
+    "index.js",
+    "access.js",
+    "util.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Delore/delore-crm-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Delore/delore-crm-core/issues"
+  },
+  "homepage": "https://github.com/Delore/delore-crm-core#readme",
+  "keywords": [
+    "crm",
+    "delore",
+    "core",
+    "express",
+    "router",
+    "access-control"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"No tests\"",
+    "pack": "npm pack",
+    "publish:dry": "npm publish --dry-run",
+    "publish:public": "npm publish --access public"
+  },
+  "author": "Rafael G Coelho",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "shorthash2": "^1.0.5"
+  }
+}
