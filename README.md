@@ -1,15 +1,14 @@
 # delore-crm-core
 
-Core CRM utilities used across Delore projects. This package centralizes route
-registration, access metadata, and a few shared helpers.
+Biblioteca central de utilidades do CRM da Delore. Reúne registro de rotas e acesso, helpers compartilhados, autenticação/token, sincronismo de permissões, conexão com banco (MySQL + MongoDB), modelos e utilidades de impressão (PDF/Excel).
 
-## Install
+## Instalação
 
 ```bash
 npm i delore-crm-core
 ```
 
-## Quick Start
+## Uso rápido (rotas e acesso)
 
 ```js
 const express = require('express');
@@ -17,65 +16,179 @@ const core = require('delore-crm-core');
 
 const app = express();
 
-core.add(
+core.access.add(
   'get',
-  '/s/example',
-  'Example',
-  'Example route',
-  core.const.GROUPOPE,
-  (req, res) => {
-    res.json({ ok: true });
-  }
+  '/s/exemplo',
+  'Exemplo',
+  'Rota de exemplo',
+  core.access.const.GROUPOPE,
+  (req, res) => res.json({ ok: true })
 );
 
-app.use(core.makeRouter());
+app.use(core.access.makeRouter());
 app.listen(3000);
 ```
 
-## Access Helpers
+## Exportações principais
 
-All access entries are stored in-memory in the module. Typical flow:
+O módulo principal exporta:
 
-1. Register routes with `add`, `addMenu`, `addOpen`, or `addNoAccessControl`.
-2. Build the Express router with `makeRouter()`.
-3. Export access metadata with `getAccess()` or `makeAccessScope*()` for ACL sync.
+- `access`: registro de rotas, metadados de acesso e criação de `router`.
+- `util`: helpers de data, máscara, número, telefone, validações e afins.
+- `logger`: logger baseado em `pino`/`pino-pretty`.
+- `memory`: cache simples em memória (chave/valor).
+- `print`: geração de PDF e Excel.
+- `authControl`: controle de segredo de autenticação (MongoDB + cache em memória).
+- `ret`: helpers de retorno e geração/validação de tokens.
+- `validRequest`: middlewares de validação de token.
+- `syncAccess`: sincronismo de acessos com o banco.
+- `sequelizeDB`: conexão com MySQL (Sequelize) + MongoDB.
+- `models`: helpers de models, sync, migration e utilidades.
 
-### Functions
+Exemplo de import:
 
-- `add(method, path, name, desc, group, fn)`
-- `addMenu(method, path, name, desc, group, fn)` marks as menu entry
-- `addOpen(method, path, name, desc, group, fn)` open by default for existing users
-- `addNoAccessControl(method, path, fn)` skips access control tracking
-- `addEsp(name, desc, group)` creates a non-route access entry (returns `id`)
-- `makeRouter()` returns an Express router with all registered routes
-- `getAccess()` returns the raw list of registered entries
-- `makeAccessScope()` returns JSON string of access IDs
-- `makeAccessScopeAll()` returns JSON string of `id#name#desc#group#isMenu`
-- `getResourceFromReq(req)` maps a request to its access metadata
+```js
+const { access, util, logger } = require('delore-crm-core');
+```
 
-### Constants
+## Access (rotas e ACL)
 
-The `const` export provides group labels:
+Registra rotas e mantém os metadados de acesso em memória. Depois monta um `router` do Express.
+
+Funções principais:
+
+- `access.add(method, path, name, desc, group, fn)`
+- `access.addMenu(method, path, name, desc, group, fn)`
+- `access.addOpen(method, path, name, desc, group, fn)`
+- `access.addNoAccessControl(method, path, fn)`
+- `access.addEsp(name, desc, group)`
+- `access.makeRouter()`
+- `access.getAccess()`
+- `access.makeAccessScope()`
+- `access.makeAccessScopeAll()`
+- `access.getResourceFromReq(req)`
+
+Constantes de grupos:
 
 - `GROUPSYS`, `GROUPCAD`, `GROUPOPE`, `GROUPUTL`, `GROUPESP`, `GROUPCON`, `GROUPADM`
 
-### Environment
+## Auth e validação
 
-`SERVICE_NAME` is read from `process.env.SERVICE_NAME` and attached to each entry.
+### Tokens e respostas
 
-## Utility Export
+O módulo `ret` centraliza geração de token e respostas padronizadas:
 
-The helper module is available as `core.util` or via direct import:
+- `ret.returnLogin(...)`, `ret.returnLoginADM(...)`, `ret.returnLoginMASTER(...)`, `ret.returnLoginDEVELOPER(...)`
+- `ret.validToken(req)`, `ret.validTokenADM(req)`, `ret.validTokenMASTER(req)`, `ret.validTokenDEVELOPER(req)`
+- `ret.makeTokenSocketIo(...)`, `ret.validTokenSocketIo(...)`
+- `ret.returnTokenMsg(...)`, `ret.validTokenMSG(req)`
+- `ret.makeTokenForRememberUser(...)`, `ret.validTokenForRememberUser(token)`
 
-```js
-const util = require('delore-crm-core/util');
-const url = util.getUrlFromReq('/crm/s/example');
-```
-
-## Direct Imports
-
-If you only need a subset:
+### Middlewares
 
 ```js
-const access = require('delore-crm-core/access');
+const { validRequest } = require('delore-crm-core');
+
+app.use('/s', validRequest.validaRequestSystem);
+app.use('/adm', validRequest.validaRequestADM);
 ```
+
+## Conexão com banco (MySQL + MongoDB)
+
+O `sequelizeDB` conecta ao MySQL via Sequelize e ao MongoDB (coleção `authControl`), carregando secrets em memória.
+
+```js
+const { sequelizeDB } = require('delore-crm-core');
+
+sequelizeDB.init(() => {
+  console.log('DB conectado');
+});
+```
+
+Variáveis de ambiente usadas:
+
+- `DB_DATABASE`, `DB_USER`, `DB_PASS`, `DB_HOST`
+- `MONGODB_URI`
+- `SECRET_LOGIN_USER`, `SECRET_REMEMBER_USER`
+- `PINO_LOG_LEVEL`
+- `TELEGRAM_BOT_TOKEN_NOTIFY`, `TELEGRAM_BOT_ENV_NOTIFY`
+
+## Models e sincronismo
+
+O módulo `models` dá suporte para:
+
+- registrar models: `addModel`, `addModelIn`, `addModelInOne`
+- sincronizar: `initSync(callback)`
+- migration: `Migration()`
+- exportar modelos para front: `ExportModels()`
+- utilitários: `canDelete`, `canDelete2`, `makeSQLTransf`, `seedFrom`
+
+O módulo `syncAccess` sincroniza a lista de acessos registrados em memória com a tabela `access`.
+
+```js
+const { syncAccess } = require('delore-crm-core');
+
+syncAccess.init('crm-service');
+await syncAccess.sync();
+```
+
+## Print (PDF e Excel)
+
+Gera relatórios em PDF (tabela/linhas) e exporta para Excel.
+
+```js
+const { print } = require('delore-crm-core');
+
+const report = print.getPrint(req, res);
+report.addColumns('Nome', 'name', 'L', 30);
+report.addColumVal('Valor', 'amount', 'R', 12, 2);
+await report.printList(data, req, res);
+```
+
+Para Excel:
+
+```js
+await report.printListEXCEL(data, req, res);
+```
+
+## Util, Logger e Memory
+
+### Util
+
+Helpers variados: datas (timezone America/Sao_Paulo), máscaras, números, telefone, validação de CPF, geração de schema JSON, etc.
+
+```js
+const { util } = require('delore-crm-core');
+
+const today = util.nowDateTime();
+const cpfOk = util.isValidCPF('00000000000');
+```
+
+### Logger
+
+Logger configurado com `pino-pretty`:
+
+```js
+const { logger } = require('delore-crm-core');
+
+logger.info('serviço iniciado');
+logger.setLevel('info');
+```
+
+### Memory
+
+Cache simples em memória:
+
+```js
+const { memory } = require('delore-crm-core');
+
+await memory.addMemory('chave', { x: 1 });
+const value = await memory.findMemory('chave');
+```
+
+## Observações
+
+- O módulo é CommonJS.
+- Os helpers de acesso dependem do registro das rotas antes do `makeRouter()`.
+- Tokens e segredos usam dados do MongoDB (`authControl`).
+
