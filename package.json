@@ -6,8 +6,9 @@
   "type": "commonjs",
   "exports": {
     ".": "./index.js",
-    "./access": "./access.js",
-    "./util": "./util.js"
+    "./*": "./*.js",
+    "./*/": "./*/index.js",
+    "./*/*": "./*/*.js"
   },
   "files": [
     "index.js",
