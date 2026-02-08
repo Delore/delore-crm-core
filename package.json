@@ -10,13 +10,6 @@
     "./*/": "./*/index.js",
     "./*/*": "./*/*.js"
   },
-  "files": [
-    "index.js",
-    "access.js",
-    "util.js",
-    "README.md",
-    "LICENSE"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Delore/delore-crm-core.git"
