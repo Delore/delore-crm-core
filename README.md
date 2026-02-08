@@ -11,18 +11,18 @@ npm i delore-crm-core
 ## Uso rápido (rotas e acesso)
 
 ```js
-const express = require('express');
-const core = require('delore-crm-core');
+const express = require("express");
+const core = require("delore-crm-core");
 
 const app = express();
 
 core.access.add(
-  'get',
-  '/s/exemplo',
-  'Exemplo',
-  'Rota de exemplo',
+  "get",
+  "/s/exemplo",
+  "Exemplo",
+  "Rota de exemplo",
   core.access.const.GROUPOPE,
-  (req, res) => res.json({ ok: true })
+  (req, res) => res.json({ ok: true }),
 );
 
 app.use(core.access.makeRouter());
@@ -48,7 +48,7 @@ O módulo principal exporta:
 Exemplo de import:
 
 ```js
-const { access, util, logger } = require('delore-crm-core');
+const { access, util, logger } = require("delore-crm-core");
 ```
 
 ## Access (rotas e ACL)
@@ -87,10 +87,10 @@ O módulo `ret` centraliza geração de token e respostas padronizadas:
 ### Middlewares
 
 ```js
-const { validRequest } = require('delore-crm-core');
+const { validRequest } = require("delore-crm-core");
 
-app.use('/s', validRequest.validaRequestSystem);
-app.use('/adm', validRequest.validaRequestADM);
+app.use("/s", validRequest.validaRequestSystem);
+app.use("/adm", validRequest.validaRequestADM);
 ```
 
 ## Conexão com banco (MySQL + MongoDB)
@@ -98,10 +98,10 @@ app.use('/adm', validRequest.validaRequestADM);
 O `sequelizeDB` conecta ao MySQL via Sequelize e ao MongoDB (coleção `authControl`), carregando secrets em memória.
 
 ```js
-const { sequelizeDB } = require('delore-crm-core');
+const { sequelizeDB } = require("delore-crm-core");
 
 sequelizeDB.init(() => {
-  console.log('DB conectado');
+  console.log("DB conectado");
 });
 ```
 
@@ -126,9 +126,9 @@ O módulo `models` dá suporte para:
 O módulo `syncAccess` sincroniza a lista de acessos registrados em memória com a tabela `access`.
 
 ```js
-const { syncAccess } = require('delore-crm-core');
+const { syncAccess } = require("delore-crm-core");
 
-syncAccess.init('crm-service');
+syncAccess.init("crm-service");
 await syncAccess.sync();
 ```
 
@@ -137,11 +137,11 @@ await syncAccess.sync();
 Gera relatórios em PDF (tabela/linhas) e exporta para Excel.
 
 ```js
-const { print } = require('delore-crm-core');
+const { print } = require("delore-crm-core");
 
 const report = print.getPrint(req, res);
-report.addColumns('Nome', 'name', 'L', 30);
-report.addColumVal('Valor', 'amount', 'R', 12, 2);
+report.addColumns("Nome", "name", "L", 30);
+report.addColumVal("Valor", "amount", "R", 12, 2);
 await report.printList(data, req, res);
 ```
 
@@ -158,10 +158,10 @@ await report.printListEXCEL(data, req, res);
 Helpers variados: datas (timezone America/Sao_Paulo), máscaras, números, telefone, validação de CPF, geração de schema JSON, etc.
 
 ```js
-const { util } = require('delore-crm-core');
+const { util } = require("delore-crm-core");
 
 const today = util.nowDateTime();
-const cpfOk = util.isValidCPF('00000000000');
+const cpfOk = util.isValidCPF("00000000000");
 ```
 
 ### Logger
@@ -169,10 +169,10 @@ const cpfOk = util.isValidCPF('00000000000');
 Logger configurado com `pino-pretty`:
 
 ```js
-const { logger } = require('delore-crm-core');
+const { logger } = require("delore-crm-core");
 
-logger.info('serviço iniciado');
-logger.setLevel('info');
+logger.info("serviço iniciado");
+logger.setLevel("info");
 ```
 
 ### Memory
@@ -180,10 +180,10 @@ logger.setLevel('info');
 Cache simples em memória:
 
 ```js
-const { memory } = require('delore-crm-core');
+const { memory } = require("delore-crm-core");
 
-await memory.addMemory('chave', { x: 1 });
-const value = await memory.findMemory('chave');
+await memory.addMemory("chave", { x: 1 });
+const value = await memory.findMemory("chave");
 ```
 
 ## Observações
@@ -191,4 +191,3 @@ const value = await memory.findMemory('chave');
 - O módulo é CommonJS.
 - Os helpers de acesso dependem do registro das rotas antes do `makeRouter()`.
 - Tokens e segredos usam dados do MongoDB (`authControl`).
-
