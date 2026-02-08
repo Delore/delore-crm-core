@@ -1,6 +1,6 @@
 {
   "name": "delore-crm-core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Core CRM utilities for Delore projects",
   "main": "index.js",
   "type": "commonjs",
