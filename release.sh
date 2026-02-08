@@ -11,10 +11,10 @@ COMMIT_MSG="$1"
 git add -A
 git commit -m "$COMMIT_MSG"
 
-# Incrementa versao patch sem commit/tag automaticos
+# Incrementa versão patch sem commit/tag automáticos
 npm version patch --no-git-tag-version
 
-# Comita a alteracao de versao junto com o restante
+# Comita a alteração de versão junto com o restante
 git add -A
 git commit -m "$COMMIT_MSG"
 
