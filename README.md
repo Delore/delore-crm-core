@@ -1,6 +1,6 @@
 # delore-crm-core
 
-Biblioteca central de utilidades do CRM da Delore. Reúne registro de rotas e acesso, helpers compartilhados, autenticação/token, sincronismo de permissões, conexão com banco (MySQL + MongoDB), modelos e utilidades de impressão (PDF/Excel).
+Biblioteca central de utilidades do CRM da Delore - Alphaville Systems. Reúne registro de rotas e acesso, helpers compartilhados, autenticação/token, sincronismo de permissões, conexão com banco (MySQL + MongoDB), modelos e utilidades de impressão (PDF/Excel).
 
 ## Instalação
 
