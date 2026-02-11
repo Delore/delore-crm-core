@@ -370,6 +370,7 @@ function searchModel(nameKey, myArray) {
 }
 
 async function createViews() {
+   const sequelize = require('delore-crm-core').sequelizeDB.getSequelize()
    try {
       await sequelize.transaction(async (t) => {
          //
