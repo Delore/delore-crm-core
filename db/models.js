@@ -5,8 +5,12 @@ const listModels = [];
 const listModelsIn = [];
 const logger = require('../utils/logger.js');
 const listTablesValidDel = [];
+let pathViews = '';
 
 const models = {
+   setPathViews: function (path) {
+      pathViews = path;
+   },
    Migration: function () {
       return migration();
    },
@@ -380,8 +384,7 @@ async function createViews() {
          //
          // Lista diretório com as views
          //
-         const directoryPath = path.join(__dirname, '../views');
-         var files = fs.readdirSync(directoryPath);
+         var files = fs.readdirSync(pathViews);
          if (files) {
             for (var i = 0; i < files.length; i++) {
                var file = files[i];
@@ -394,7 +397,7 @@ async function createViews() {
 
                if (listViewExist.length == 0) {
                   console.log('* * * criando a view ' + viewName);
-                  var sql = fs.readFileSync(directoryPath + '/' + file, 'utf8');
+                  var sql = fs.readFileSync(pathViews + '/' + file, 'utf8');
                   console.log(sql);
                   await sequelize.query(sql);
                }
